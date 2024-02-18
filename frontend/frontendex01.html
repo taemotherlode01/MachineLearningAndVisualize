@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Frontend Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script type="text/javascript" src="util.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    <script>
+        //ตัวอย่าง  JQuery การใช้ event ใน  JAVAScript และการใช้ ajax
+        $(document).ready(function () {
+            
+            callApiAddDataToCombobox("http://127.0.0.1:5000/api/ex02combobox/a","#cityList");
+            addCityListComboBoxEvent();
+        });
+
+        
+
+        function addCityListComboBoxEvent(){
+            $("#cityList").change(function () {
+                var city_name = $("#cityList").val();
+                $.ajax({
+                    url: "http://127.0.0.1:5000/api/UserInputEx02/"+city_name,
+                    method: "GET",
+                    dataType: 'json',
+                    success: function (data) {
+                        console.log(data);
+                        createTable(data, '#dynamicTable');
+                        //bar, line, pie
+                        createChart(data, 'line', 'myChart') ;
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) { alert(thrownError); }
+                });
+            });
+
+        }
+
+    </script>
+    
+    <style>
+       /* Remove the navbar's default margin-bottom and rounded borders */ 
+       .navbar {
+      margin-bottom: 0;
+      border-radius: 0;
+    }
+    
+    /* Set height of the grid so .sidenav can be 100% (adjust as needed) */
+    .row.content {height: 450px}
+    
+    /* Set gray background color and 100% height */
+    .sidenav {
+      padding-top: 20px;
+      background-color: #f1f1f1;
+      height: 100%;
+    }
+    
+    /* Set black background color, white text and some padding */
+    footer {
+      background-color: #555;
+      color: white;
+      padding: 15px;
+    }
+    
+    /* On small screens, set height to 'auto' for sidenav and grid */
+    @media screen and (max-width: 767px) {
+      .sidenav {
+        height: auto;
+        padding: 15px;
+      }
+      .row.content {height:auto;} 
+    }
+    @import url('https://fonts.googleapis.com/css?family=Lexend+Deca&display=swap');
+
+body {
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(
+        #243545,
+        #243545 var(--line-offset),
+        #dedede var(--line-offset)
+    );
+    width: 100vw;
+    height: 100vh;
+    font-family: 'Lexend Deca', sans-serif;
+    color: #878787;
+
+    --menu-item-size: 50px;
+    --green-color: #329680;
+    --blue-color: #099c95;
+    --dark-green-color: #175b52;
+    --white-color: #FFF;
+    --gray-color: #EDEDED;
+    --container-width: 700px;
+    --container-height: 400px;
+    --line-offset: calc((100% - var(--container-height))/ 2 + var(--menu-item-size) + 0.6em);
+}
+
+
+.container {
+    width: var(--container-width);
+    height: var(--container-height);
+    margin-left: -350px;
+    margin-top: -200px;
+    top: 50%;
+    left: 50%;
+    position: absolute;
+    margin-bottom: 800px;
+    z-index: 1;
+}
+
+.main-menu {
+    display: flex;
+    list-style: none;
+    margin: auto 0;
+    padding: 0.6em 0 0 0;
+}
+
+.main-menu > li {
+    box-sizing: border-box;
+    height: var(--menu-item-size);
+    width: calc(3.5 * var(--menu-item-size));  
+    line-height: var(--menu-item-size);
+    padding: 0 2em;
+    margin: 1px;
+    transition: 0.5s linear all;
+    background: var(--green-color);
+    color: var(--dark-green-color);
+    cursor: pointer;
+    font-size: 16px;
+    user-select: none;
+}
+
+.main-menu > li:not(.with-submenu) {
+    clip-path: polygon(10% 0%, 0% 100%, 95% 100%, 100% 50%, 95% 0%);
+    shape-outside: polygon(10% 0%, 0% 100%, 95% 100%, 100% 50%, 95% 0%);
+}
+
+.main-menu > li:nth-child(2) {
+    transform: translateX(-5%);
+}
+
+.main-menu > li:nth-child(3) {
+    transform: translateX(-10%)
+}
+
+.main-menu > li:nth-child(4) {
+    transform: translateX(-15%)
+}
+
+.main-menu i {
+    margin-right: 5px;
+}
+
+.main-menu > li:hover:not(.active) {
+    background: linear-gradient(to right, var(--green-color), var(--blue-color));
+    color: var(--white-color);
+}
+
+.main-menu > li:active:not(.active),
+.main-menu > li:active:not(.with-submenu){
+    background: var(--blue-color);
+    color: var(--white-color);
+}
+
+.main-menu > li:hover i:not(li.active) {
+    color: #175c58;
+}
+
+.main-menu .active {
+    color: var(--white-color);
+    background: var(--blue-color);
+    cursor: default;
+    text-shadow: 1px 1px 1px var(--dark-green-color);
+    font-size: 18px;
+}
+
+article {
+   background: var(--gray-color);
+   padding: 1em;
+   border-radius: 0 0 5px 5px;
+   box-shadow: 5px 5px 5px #CCC;
+   position: relative;
+   z-index: -1;
+}
+
+h1 {
+    font-size: 115%;
+    margin: 1em 2em;
+    padding: 0;
+    position: relative;
+    color: #777;
+}
+
+.content {
+    padding: 0 0 0 3em;
+    font-size: 16px;
+    display: block;
+}
+
+.submenu {
+    display: none;
+    position: absolute;
+    z-index: 10;
+    list-style: none;
+    left: 0;
+    margin: 0;
+    padding: 0;
+    min-width: calc(3.5 * var(--menu-item-size) - 5%);
+    box-shadow: 5px 5px 5px #CCC;
+}
+
+.with-submenu {
+    position: relative;
+    display: inline-block;
+    clip-path: polygon(10% 0%, 0% 100%, 0% 500%, 95% 500%, 95% 100%, 100% 50%, 95% 0%);
+    shape-outside: polygon(10% 0%, 0% 100%, 95% 100%, 100% 50%, 95% 0%);
+}
+
+.with-submenu:hover .submenu {
+    display: block;
+}
+
+.submenu > li {
+    background: #dedede;
+    border-bottom: 1px solid var(--gray-color); 
+    color: #777;
+    padding: 1.2em 1em;
+    transition: 0.3s all linear;
+    line-height: 0%;
+}
+
+.submenu > li:hover {
+    background: var(--gray-color)
+}
+
+.submenu > li:active {
+    background: var(--white-color);
+}
+
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+  width: 40%;
+  margin: 20px;
+}
+
+.card:hover {
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+.containerCard {
+  padding: 2px 16px;
+}
+li a{
+    color: #FFF;
+}
+li a:hover{
+    text-decoration: none;
+    color: #cecece;
+}
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <nav class="menu">
+        <ul class="main-menu">
+            <li class="active"><i class="fa fa-home"></i><a href="Home.html">Home</a></li>
+            <li><i class="fa fa-user"></i><a href="frontendex01.html">Visualization</a></li>
+            <li><i class="fa fa-search"></i><a href="frontendex05.html">ML Prediction</a></li>
+        </ul>
+    </nav>
+    <article>
+        <div class="content">
+          <div class="col-sm-8 text-left"> 
+            <div>
+                <select id="cityList">
+                      
+                </select>
+            </div>
+           
+            <div></div><canvas id="myChart" style="width:100%;max-width:700px"></canvas></div>
+            <div id="dynamicTable"></div>
+    </article>
+</div>
+
+
+
+
+
+
+
+
+
+</body>
+</html>
+
+
+
+
